@@ -33,7 +33,7 @@ multidict==6.6.3
 numpy==2.3.1
 packaging==25.0
 pip-tools==7.4.1
-pipreqs==0.4.13
+pipreqs==0.5.0
 platformdirs==4.3.8
 propcache==0.3.2
 py-cord==2.6.1
