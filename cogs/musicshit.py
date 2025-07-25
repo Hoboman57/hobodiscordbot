@@ -5,7 +5,7 @@ from youtubesearchpython import VideosSearch
 from yt_dlp import YoutubeDL
 import asyncio
 
-class music_cog(commands.Cog):
+class musicshit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.is_playing = False
@@ -72,6 +72,7 @@ class music_cog(commands.Cog):
                     self.vc = await voice_channel.connect()
                     if self.vc is None:
                         await ctx.send("```Could not connect to the voice channel```")
+                        print("Failed to connect to voice channel.")
                         return
                 else:
                     await self.vc.move_to(voice_channel)
@@ -90,6 +91,7 @@ class music_cog(commands.Cog):
                     )
                 else:
                     await ctx.send("```Could not play the song.```")
+                    print("failed to play song or already playing.")
             except Exception as e:
                 await ctx.send(f"Error playing music: {e}")
         else:
@@ -102,27 +104,33 @@ class music_cog(commands.Cog):
             voice_channel = ctx.author.voice.channel
         except Exception:
             await ctx.send("```You need to connect to a voice channel first!```")
+            print("User is not connected to a voice channel.")
             return
         if self.is_paused:
             try:
                 self.vc.resume()
             except Exception as e:
                 await ctx.send(f"Error resuming: {e}")
+                print(f"Error resuming music: {e}")
         else:
             song = self.search_yt(query)
             if not song:
                 await ctx.send("```Could not download the song. Incorrect format or no results. Try another keyword.```")
+                print("Failed to find song on YouTube due to incorrect format or no results.")
             else:
                 try:
                     if self.is_playing:
                         await ctx.send(f"**#{len(self.music_queue)+2} -'{song['title']}'** added to the queue")
+                        print(f"Song '{song['title']}' added to the queue.")
                     else:
                         await ctx.send(f"**'{song['title']}'** added to the queue")
+                        print(f"Song '{song['title']}' added to the queue and will be played now.")
                     self.music_queue.append([song, voice_channel])
                     if not self.is_playing:
                         await self.play_music(ctx)
                 except Exception as e:
                     await ctx.send(f"Error adding song: {e}")
+                    print(f"Error adding song to queue: {e}")
 
     @commands.command(name="pause", help="Pauses the current song being played")
     async def pause(self, ctx, *args):
@@ -139,6 +147,7 @@ class music_cog(commands.Cog):
                     self.vc.resume()
         except Exception as e:
             await ctx.send(f"Error pausing/resuming: {e}")
+            print(f"Error pausing/resuming music: {e}")
 
     @commands.command(name="resume", aliases=["r"], help="Resumes playing with the discord bot")
     async def resume(self, ctx, *args):
@@ -150,6 +159,7 @@ class music_cog(commands.Cog):
                     self.vc.resume()
         except Exception as e:
             await ctx.send(f"Error resuming: {e}")
+            print(f"Error resuming music: {e}")
 
     @commands.command(name="skip", aliases=["s"], help="Skips the current song being played")
     async def skip(self, ctx):
@@ -159,6 +169,7 @@ class music_cog(commands.Cog):
                 await self.play_music(ctx)
         except Exception as e:
             await ctx.send(f"Error skipping: {e}")
+            print(f"Error skipping music: {e}")
 
     @commands.command(name="queue", aliases=["q"], help="Displays the current songs in queue")
     async def queue(self, ctx):
@@ -168,10 +179,13 @@ class music_cog(commands.Cog):
                 retval += f"#{i+1} -" + self.music_queue[i][0]['title'] + "\n"
             if retval != "":
                 await ctx.send(f"```queue:\n{retval}```")
+                print(f"Displayed music queue:\n{retval}")
             else:
                 await ctx.send("```No music in queue```")
+                print("Music queue is empty.")
         except Exception as e:
             await ctx.send(f"Error displaying queue: {e}")
+            print(f"Error displaying music queue: {e}")
 
     @commands.command(name="clear", aliases=["c", "bin"], help="Stops the music and clears the queue")
     async def clear(self, ctx):
@@ -180,8 +194,10 @@ class music_cog(commands.Cog):
                 self.vc.stop()
             self.music_queue = []
             await ctx.send("```Music queue cleared```")
+            print("Music queue cleared.")
         except Exception as e:
             await ctx.send(f"Error clearing queue: {e}")
+            print(f"Error clearing music queue: {e}")
 
     @commands.command(name="stop", aliases=["disconnect", "l", "d"], help="Kick the bot from VC")
     async def dc(self, ctx):
@@ -191,8 +207,10 @@ class music_cog(commands.Cog):
             if self.vc and self.vc.is_connected():
                 await self.vc.disconnect()
             await ctx.send("```Disconnected from voice channel```")
+            print("Bot disconnected from voice channel.")
         except Exception as e:
             await ctx.send(f"Error disconnecting: {e}")
+            print(f"Error disconnecting from voice channel: {e}")
 
     @commands.command(name="remove", help="Removes last song added to queue")
     async def re(self, ctx):
@@ -200,7 +218,12 @@ class music_cog(commands.Cog):
             if self.music_queue:
                 self.music_queue.pop()
                 await ctx.send("```last song removed```")
+                print("Last song removed from the queue.")
             else:
                 await ctx.send("```Queue is already empty```")
+                print("Music queue is empty, nothing to remove.")
         except Exception as e:
             await ctx.send(f"Error removing song: {e}")
+            print(f"Error removing song from queue: {e}")
+def setup(bot):
+    bot.add_cog(musicshit(bot))

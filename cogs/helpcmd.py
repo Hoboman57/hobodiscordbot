@@ -1,7 +1,12 @@
 import discord
+import os
+from dotenv import load_dotenv
 from discord.ext import commands
 
-class help_cog(commands.Cog):
+load_dotenv()
+GUILD_ID = os.getenv("GUILD_ID")
+
+class helpcmd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.help_message = ""
@@ -11,11 +16,11 @@ class help_cog(commands.Cog):
         self.help_message = f"""
 ```
 General commands:
-{self.bot.command_prefix}help - displays all the available commands
-{self.bot.command_prefix}prefix - change command prefix
+/help - displays all the available commands (this message)
+/prefix - change command prefix (requires bot owner)
 -----------------YOUTUBE MUSIC COMMANDS-----------------
 {self.bot.command_prefix}q - displays the current music queue
-{self.bot.command_prefix}p <keywords> - finds the song on youtube and plays it in your current channel. Will resume playing the current song if it was paused
+{self.bot.command_prefix}p <youtube URL> - finds the song on youtube and plays it in your current channel. Will resume playing the current song if it was paused
 {self.bot.command_prefix}skip - skips the current song being played
 {self.bot.command_prefix}clear - Stops the music and clears the queue
 {self.bot.command_prefix}stop - Disconnected the bot from the voice channel
@@ -24,21 +29,24 @@ General commands:
 {self.bot.command_prefix}remove - removes last song from the queue
 ```
 """
-
+    #this just sets the clankers presence to the current prefix
     @commands.Cog.listener()
     async def on_ready(self):
         try:
-            await self.bot.change_presence(activity=discord.Game(f"type {self.bot.command_prefix}help"))
+            await self.bot.change_presence(activity=discord.Game(f"CURRNETLY UNDER TESTING"))
         except Exception as e:
             print(f"Error setting presence: {e}")
 
-    @commands.command(name="help", help="Displays all the available commands")
+    # this is the help command that displays the help message
+    @discord.slash_command(guild_ids=[GUILD_ID], name="help", description="Displays all the available commands")
     async def help(self, ctx):
         try:
             await ctx.send(self.help_message)
         except Exception as e:
             await ctx.send(f"Error displaying help: {e}")
+            print(f"Error displaying help message: {e}")
 
+    #sets the bot's prefix that only the owner can use
     @commands.command(name="prefix", help="Change bot prefix")
     @commands.is_owner()
     async def prefix(self, ctx, *args):
@@ -46,14 +54,19 @@ General commands:
             new_prefix = " ".join(args)
             if not new_prefix:
                 await ctx.send("Please provide a new prefix.")
+                print("Awaiting for new prefix input.")
                 return
             self.bot.command_prefix = new_prefix
             self.set_message()
             await ctx.send(f"prefix set to **'{self.bot.command_prefix}'** (restart required for full effect)")
+            print(f"Prefix changed to: {self.bot.command_prefix}. Restart required for full effect.")
+            # Update the bot's presence to reflect the new prefix
             await self.bot.change_presence(activity=discord.Game(f"type {self.bot.command_prefix}help"))
         except Exception as e:
             await ctx.send(f"Error changing prefix: {e}")
+            print(f"Error changing prefix: {e}")
 
+    # this shit acts like a fucken nuke, it sends a message to ALL OF THE FUCKING CHANNELS
     @commands.command(name="send_to_all", help="send a message to all text channels")
     @commands.is_owner()
     async def send_to_all(self, ctx, *msg):
@@ -64,3 +77,6 @@ General commands:
             except Exception as e:
                 print(f"Failed to send to {channel}: {e}")
                 await ctx.send(f"Failed to send to {channel.mention}: {e}")
+
+def setup(bot):
+    bot.add_cog(helpcmd(bot))
