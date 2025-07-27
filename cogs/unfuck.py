@@ -25,5 +25,21 @@ class unfuck(commands.Cog):
     async def generalhiping(self, ctx: discord.ApplicationContext):
         await ctx.respond(f"current ping: {round(self.bot.latency * 1000):.2f}ms")
 
+    # shuts down the bot only when the bot owner runs this command, spooks anyone who trys to run this shit
+    @discord.slash_command(guild_ids=[GUILD_ID], name="fuck", description="i wonder what this command does?")
+    async def fuck(self, ctx: discord.ApplicationContext):
+        try:
+            app_info = await self.bot.application_info()
+            if ctx.user.id != app_info.owner.id:
+                print(f"Unauthorized shutdown attempt by {ctx.user} (ID: {ctx.user.id})")
+                await ctx.respond("**oi** you cant shut me down shit ass.", ephemeral=True)
+                return
+            print(f"Shutting down bot as requested by {ctx.user} (ID: {ctx.user.id})")
+            await ctx.respond(f"Shutting down as authorised by {ctx.user}", ephemeral=False)
+            await self.bot.close()
+        except Exception as e:
+            await ctx.respond(f"Error: {e}", ephemeral=True)
+            print(f"Error shutting down bot: {e}")
+
 def setup(bot):
     bot.add_cog(unfuck(bot))

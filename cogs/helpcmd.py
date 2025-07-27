@@ -14,10 +14,13 @@ class helpcmd(commands.Cog):
 
     def set_message(self):
         self.help_message = f"""
-```
+``` 
+Made by Hoboman57  
+-----------------GENERAL COMMANDS-----------------
 General commands:
 /help - displays all the available commands (this message)
 /prefix - change command prefix (requires bot owner)
+/github - displays the link to the bot's GitHub repository
 -----------------YOUTUBE MUSIC COMMANDS-----------------
 {self.bot.command_prefix}q - displays the current music queue
 {self.bot.command_prefix}p <youtube URL> - finds the song on youtube and plays it in your current channel. Will resume playing the current song if it was paused
@@ -46,6 +49,15 @@ General commands:
             await ctx.send(f"Error displaying help: {e}")
             print(f"Error displaying help message: {e}")
 
+    @discord.slash_command(guild_ids=[GUILD_ID], name="github", description="Displays the link to the bot's GitHub repository")
+    async def github(self, ctx: discord.ApplicationContext):
+        try:
+            await ctx.send("GitHub Repository: https://github.com/Hoboman57/alt_f4_bot")
+            print(f"GitHub command executed successfully.")
+        except Exception as e:
+            await ctx.send(f"Error displaying GitHub link: {e}")
+            print(f"Error displaying GitHub link: {e}")
+        
     #sets the bot's prefix that only the owner can use
     @commands.command(name="prefix", help="Change bot prefix")
     @commands.is_owner()

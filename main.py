@@ -10,7 +10,7 @@ from cogs.unfuck import unfuck
 
 #NOTES FOR FUTURE SELF OR ANY OTHER POOR SOD DOING THIS
 # __init__.py isnt used but keep it there otherwise this will shit itself
-
+# remember to load the cogs properly otherwise this will shit itself
 # for some reason for the / commands to work in ANY FUCKING COG
 # you need to include the guild_ids parameter in the slash command decorator
 # without it, the commands won't be recognized and i put the guild id in the .env file
@@ -90,33 +90,6 @@ async def hello(ctx):
         await ctx.respond("Hello, I am a clanker", ephemeral=False)
     except Exception as e:
         await ctx.respond(f"Error: {e}", ephemeral=True)
-
-# ran the /help shit before i added in the fucking prefix commands
-@bot.slash_command(name="sos", description="Show help message")
-async def sos(ctx):
-    try:
-        await ctx.respond(
-            "Here are my commands:\n/sos - Shows this message\n/hello - makes me greet you",
-            ephemeral=True
-        )
-    except Exception as e:
-        await ctx.respond(f"Error: {e}", ephemeral=True)
-
-# shuts down the bot only when the bot owner runs this command, spooks anyone who trys to run this shit
-@bot.slash_command(name="shutdown", description="Shut down the bot (owner only)", guild_ids=[GUILD_ID])
-async def shutdown(ctx):
-    try:
-        app_info = await bot.application_info()
-        if ctx.user.id != app_info.owner.id:
-            print(f"Unauthorized shutdown attempt by {ctx.user} (ID: {ctx.user.id})")
-            await ctx.respond("**THIS ACTION HAS BEEN LOGGED** lmao you cant shut me down shit ass.", ephemeral=True)
-            return
-        print(f"Shutting down bot as requested by {ctx.user} (ID: {ctx.user.id})")
-        await ctx.respond(f"Shutting down as authorised by {ctx.user}", ephemeral=False)
-        await bot.close()
-    except Exception as e:
-        await ctx.respond(f"Error: {e}", ephemeral=True)
-        print(f"Error shutting down bot: {e}")
 
 # dead ass this just makes the fucker run
 if __name__ == "__main__":
