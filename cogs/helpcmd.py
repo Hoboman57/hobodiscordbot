@@ -52,7 +52,7 @@ General commands:
     @discord.slash_command(guild_ids=[GUILD_ID], name="github", description="Displays the link to the bot's GitHub repository")
     async def github(self, ctx: discord.ApplicationContext):
         try:
-            await ctx.send("GitHub Repository: https://github.com/Hoboman57/alt_f4_bot")
+            await ctx.send("GitHub Repository: https://github.com/Hoboman57/hobodiscordbot")
             print(f"GitHub command executed successfully.")
         except Exception as e:
             await ctx.send(f"Error displaying GitHub link: {e}")
